@@ -1,122 +1,239 @@
-import { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, FlatList, Image } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { useAuth, useUser } from '@clerk/clerk-expo';
+import { supabase } from '@/lib/supabase';
+import { useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 
-import { images } from "@/constants/images";
-import { icons } from "@/constants/icons";
+const audioSessions = [
+  { id: 1, day: 1, title: 'What is this **', category: 'Introduction', duration: '10 min', img: require('@/assets/images/card1.jpg') },
+  { id: 2, day: 2, title: 'The terminology trap', category: "Basics", duration: '15 min', img: require('@/assets/images/card2.jpg') },
+  { id: 3, day: 3, title: 'Your breath is just HQ', category: 'Technique', duration: '7 min', img: require('@/assets/images/card3.jpg') },
+  { id: 4, day: 4, title: 'Gym for your mind', category: 'Concept', duration: '5 min', img: require('@/assets/images/card4.jpg') },
+  { id: 5, day: 5, title: 'Don’t lose half your life', category: 'Philosophy', duration: '20 min', img: require('@/assets/images/card4.jpg') },
+  { id: 6, day: 6, title: 'Past, present & future', category: 'Perspective', duration: '10 min', img: require('@/assets/images/card1.jpg') },
+  { id: 7, day: 7, title: 'Get off the tracks to angryville', category: "Emotion", duration: '15 min', img: require('@/assets/images/card2.jpg') },
+  { id: 8, day: 8, title: 'Mind-gym benefits in real life', category: 'Application', duration: '7 min', img: require('@/assets/images/card3.jpg') },
+  { id: 9, day: 9, title: 'Life’s secret master key', category: 'Insight', duration: '5 min', img: require('@/assets/images/card4.jpg') },
+  { id: 10, day: 10, title: 'Inside world to new life', category: 'Transformation', duration: '20 min', img: require('@/assets/images/card4.jpg') },
+];
 
-import useFetch from "@/services/usefetch";
-import { fetchMovies } from "@/services/api";
-import { updateSearchCount } from "@/services/appwrite";
+export default function SearchScreen() {
+  const { signOut } = useAuth();
+  const { user } = useUser();
+  const [day, setDay] = useState(1);
+  const [stressLevel, setStressLevel] = useState(0);
+  let emailAddress=user?.emailAddresses[0].emailAddress
+ 
 
-import SearchBar from "@/components/SearchBar";
-import MovieDisplayCard from "@/components/MovieCard";
+  const fetchUserData = async () => {
 
-const Search = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+    if (!user?.firstName) {
+      console.log('No user found');
+      return;
+    }
 
-  const {
-    data: movies = [],
-    loading,
-    error,
-    refetch: loadMovies,
-    reset,
-  } = useFetch(() => fetchMovies({ query: searchQuery }), false);
+  
+    try {
+      // Check if user exists
+      const { data: existingUser, error: fetchError } = await supabase
+        .from('User')
+        .select('*')
+        .eq('username', emailAddress)
+        .single();
 
-  const handleSearch = (text: string) => {
-    setSearchQuery(text);
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching user:', fetchError);
+        return;
+      }
+
+      if (existingUser) {
+        setDay(existingUser.day);
+        setStressLevel(existingUser.stress_level);
+      } else {
+        // Create new user
+        const { error: insertError } = await supabase
+          .from('User')
+          .insert([
+            { username: emailAddress, day: 1, stress_level: 0 }
+          ]);
+
+        if (insertError) {
+          console.error('Error creating user:', insertError);
+        } else {
+          setDay(1);
+          setStressLevel(0);
+        }
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    }
   };
 
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(async () => {
-      if (searchQuery.trim()) {
-        await loadMovies();
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [user?.firstName])
+  );
 
-        // Call updateSearchCount only if there are results
-        if (movies?.length! > 0 && movies?.[0]) {
-          await updateSearchCount(searchQuery, movies[0]);
-        }
-      } else {
-        reset();
-      }
-    }, 500);
+  const startNextDay = async () => {
+    if (!user?.firstName) return;
+    const newDay = day + 1;
+    setDay(newDay);
+    //setStressLevel(0);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+    const { error } = await supabase
+      .from('User')
+      .update({ day: newDay, stress_level: 0 })
+      .eq('username', emailAddress);
+
+    if (error) {
+      console.error('Error updating day:', error);
+    }
+  };
 
   return (
-    <View className="flex-1 bg-primary">
-      <Image
-        source={images.bg}
-        className="flex-1 absolute w-full z-0"
-        resizeMode="cover"
-      />
+    <LinearGradient
+      colors={['#fcd34d', '#f472b6', '#db2777', '#c084fc']} // Vibrant Sunrise with Purple Accent
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      className="flex-1"
+    >
+      <SafeAreaView className="flex-1">
+        <StatusBar style="dark" />
 
-      <FlatList
-        className="px-5"
-        data={movies as Movie[]}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <MovieDisplayCard {...item} />}
-        numColumns={3}
-        columnWrapperStyle={{
-          justifyContent: "flex-start",
-          gap: 16,
-          marginVertical: 16,
-        }}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        ListHeaderComponent={
-          <>
-            <View className="w-full flex-row justify-center mt-20 items-center">
-              <Image source={icons.logo} className="w-12 h-10" />
+        {/* Header */}
+        <View className="px-6 py-4 flex-row justify-between items-center z-10">
+          <View>
+            <Text className="text-white/80 text-lg font-dancing">Good Morning,</Text>
+            <Text className="text-white text-3xl font-dancing font-bold">{user?.firstName || 'Abdullah'}</Text>
+          </View>
+          <TouchableOpacity
+            className="bg-white/20 p-3 rounded-full border border-white/30 backdrop-blur-md"
+            onPress={async () => {
+              await signOut();
+              router.replace('/');
+            }}
+          >
+            <Feather name="log-out" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView showsVerticalScrollIndicator={false} className="flex-1 z-10">
+
+          {/* Daily Essentials Section */}
+          <View className="mt-4">
+            <Text className="text-3xl font-bold text-white px-6 mb-4 font-dancing">Daily Essentials</Text>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 20 }}
+              className="flex-row"
+            >
+              {audioSessions.map((session) => (
+                <TouchableOpacity
+                  key={session.id}
+                  activeOpacity={0.9}
+                  className="mr-5"
+                  onPress={() => router.push({
+                    pathname: '/save',
+                    params: {
+                      day: day, 
+                      cardDay: session.day,
+                      title: session.title,
+                      category: session.category,
+                      ts: Date.now()
+                    }
+                  })}
+                >
+                  <ImageBackground
+                    source={session.img}
+                    className="w-48 h-64 justify-between overflow-hidden relative"
+                    imageStyle={{ borderRadius: 24 }}
+                  >
+                    {/* Overlay for readability */}
+                    <View className="absolute inset-0 bg-black/20 rounded-3xl" />
+
+                    <View className="p-5 flex-row justify-between items-start z-10">
+                      <View className="bg-white/30 p-2 rounded-full backdrop-blur-md border border-white/20">
+                        <FontAwesome5 name="play" size={10} color="white" />
+                      </View>
+                      <View className="bg-white/90 px-3 py-1 rounded-full">
+                        <Text className="text-orange-900 text-xs font-bold font-dancing">Day {session.day}</Text>
+                      </View>
+                    </View>
+
+                    <View className="p-5 z-10">
+                      <Text className="text-white text-xl font-bold leading-6 mb-1 font-dancing">{session.title}</Text>
+                      <Text className="text-orange-50/90 text-xs font-medium uppercase tracking-wider mb-2">{session.category}</Text>
+                      <View className="flex-row items-center">
+                        <Feather name="clock" size={12} color="#ffedd5" />
+                        <Text className="text-orange-50 text-xs ml-1 font-medium font-dancing">{session.duration}</Text>
+                      </View>
+                    </View>
+                  </ImageBackground>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Journey Progress Section */}
+          <View className="px-6 mt-6 mb-10">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-3xl font-bold text-white font-dancing">Your Journey</Text>
+              <TouchableOpacity onPress={startNextDay} className="bg-white/20 px-4 py-2 rounded-full border border-white/30">
+                <Text className="text-white font-dancing font-bold">Start Next Day</Text>
+              </TouchableOpacity>
             </View>
 
-            <View className="my-5">
-              <SearchBar
-                placeholder="Search for a movie"
-                value={searchQuery}
-                onChangeText={handleSearch}
-              />
+            <View className="bg-white/20 p-6 rounded-3xl border border-white/30 backdrop-blur-md">
+              <View className="flex-row items-center mb-6 bg-white/10 p-3 rounded-2xl border border-white/20">
+                <View className="bg-white/90 p-3 rounded-full mr-4">
+                  <Feather name="calendar" size={24} color="#db2777" />
+                </View>
+                <View >
+                  <Text className="text-white/80 font-medium font-dancing">Current Streak</Text>
+                  <Text className="text-3xl font-bold text-white font-dancing">Day {day}</Text>
+                </View>
+              </View>
+
+              <View className="h-[1px] bg-white/20 mb-6" />
+
+              <View className="flex-row items-center mb-6 bg-white/10 p-3 rounded-2xl border border-white/20">
+                <View className="bg-white/90 p-3 rounded-full mr-4">
+                  <FontAwesome5 name="lightbulb" size={24} color="#fcd34d" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-white/80 font-medium mb-1 font-dancing">Today's Focus</Text>
+                  <Text className="text-white text-lg font-semibold leading-6 ">
+                    Mindfulness techniques for reducing anxiety triggers.
+                  </Text>
+                </View>
+              </View>
+
+              <View className="bg-white/10 rounded-2xl p-4 flex-row items-center justify-between border border-white/20">
+                <View>
+                  <Text className="text-white/80 text-sm font-medium mb-1 font-dancing">Current Stress Level</Text>
+                  <Text className="text-2xl font-bold text-white font-dancing">Level {stressLevel}</Text>
+                </View>
+                <View className="h-10 w-[1px] bg-white/20 mx-4" />
+                <View>
+                  <Text className="text-white/80 text-sm font-medium mb-1 font-dancing">Goal</Text>
+                  <Text className="text-2xl font-bold text-green-300 font-dancing">Level {Math.max(0, stressLevel - 1)}</Text>
+                </View>
+              </View>
+
             </View>
+          </View>
 
-            {loading && (
-              <ActivityIndicator
-                size="large"
-                color="#0000ff"
-                className="my-3"
-              />
-            )}
-
-            {error && (
-              <Text className="text-red-500 px-5 my-3">
-                Error: {error.message}
-              </Text>
-            )}
-
-            {!loading &&
-              !error &&
-              searchQuery.trim() &&
-              movies?.length! > 0 && (
-                <Text className="text-xl text-white font-bold">
-                  Search Results for{" "}
-                  <Text className="text-accent">{searchQuery}</Text>
-                </Text>
-              )}
-          </>
-        }
-        ListEmptyComponent={
-          !loading && !error ? (
-            <View className="mt-10 px-5">
-              <Text className="text-center text-gray-500">
-                {searchQuery.trim()
-                  ? "No movies found"
-                  : "Start typing to search for movies"}
-              </Text>
-            </View>
-          ) : null
-        }
-      />
-    </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
-};
-
-export default Search;
+}

@@ -18,6 +18,9 @@ module.exports = {
         },
         accent: "#AB8BFF",
       },
+      fontFamily: {
+        dancing: ["DancingScript_700Bold"],
+      },
     },
   },
   plugins: [],
