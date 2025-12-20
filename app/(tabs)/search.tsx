@@ -11,16 +11,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 
 const audioSessions = [
-  { id: 1, day: 1, title: 'What is this **', category: 'Introduction', duration: '10 min', img: require('@/assets/images/card1.jpg') },
-  { id: 2, day: 2, title: 'The terminology trap', category: "Basics", duration: '15 min', img: require('@/assets/images/card2.jpg') },
-  { id: 3, day: 3, title: 'Your breath is just HQ', category: 'Technique', duration: '7 min', img: require('@/assets/images/card3.jpg') },
-  { id: 4, day: 4, title: 'Gym for your mind', category: 'Concept', duration: '5 min', img: require('@/assets/images/card4.jpg') },
-  { id: 5, day: 5, title: 'Don’t lose half your life', category: 'Philosophy', duration: '20 min', img: require('@/assets/images/card4.jpg') },
-  { id: 6, day: 6, title: 'Past, present & future', category: 'Perspective', duration: '10 min', img: require('@/assets/images/card1.jpg') },
-  { id: 7, day: 7, title: 'Get off the tracks to angryville', category: "Emotion", duration: '15 min', img: require('@/assets/images/card2.jpg') },
-  { id: 8, day: 8, title: 'Mind-gym benefits in real life', category: 'Application', duration: '7 min', img: require('@/assets/images/card3.jpg') },
-  { id: 9, day: 9, title: 'Life’s secret master key', category: 'Insight', duration: '5 min', img: require('@/assets/images/card4.jpg') },
-  { id: 10, day: 10, title: 'Inside world to new life', category: 'Transformation', duration: '20 min', img: require('@/assets/images/card4.jpg') },
+  { id: 1, day: 1, title: 'What is this **', category: 'Introduction', duration: '10 min', img: require('@/assets/images/card1.png') },
+  { id: 2, day: 2, title: 'The terminology trap', category: "Basics", duration: '15 min', img: require('@/assets/images/card2.png') },
+  { id: 3, day: 3, title: 'Your breath is just HQ', category: 'Technique', duration: '7 min', img: require('@/assets/images/card3.png') },
+  { id: 4, day: 4, title: 'Gym for your mind', category: 'Concept', duration: '5 min', img: require('@/assets/images/card4.png') },
+  { id: 5, day: 5, title: 'Don’t lose half your life', category: 'Philosophy', duration: '20 min', img: require('@/assets/images/card4.png') },
+  { id: 6, day: 6, title: 'Past, present & future', category: 'Perspective', duration: '10 min', img: require('@/assets/images/card1.png') },
+  { id: 7, day: 7, title: 'Get off the tracks to angryville', category: "Emotion", duration: '15 min', img: require('@/assets/images/card2.png') },
+  { id: 8, day: 8, title: 'Mind-gym benefits in real life', category: 'Application', duration: '7 min', img: require('@/assets/images/card3.png') },
+  { id: 9, day: 9, title: 'Life’s secret master key', category: 'Insight', duration: '5 min', img: require('@/assets/images/card4.png') },
+  { id: 10, day: 10, title: 'Inside world to new life', category: 'Transformation', duration: '20 min', img: require('@/assets/images/card4.png') },
 ];
 
 export default function SearchScreen() {
