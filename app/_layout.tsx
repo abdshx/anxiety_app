@@ -40,7 +40,7 @@ export default function RootLayout() {
     DancingScript_700Bold,
   });
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   useEffect(() => {
     if (loaded) {
@@ -52,7 +52,7 @@ export default function RootLayout() {
     return null;
   }
 
-  if (!publishableKey) {
+   if (!publishableKey) {
     throw new Error(
       'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
     );
