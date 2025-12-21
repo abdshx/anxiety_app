@@ -1,4 +1,5 @@
-import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import * as Linking from 'expo-linking';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { AntDesign, Feather } from '@expo/vector-icons';
@@ -14,7 +15,6 @@ import Animated, {
   withDelay,
   withSequence,
   Easing,
-  RunOnJS
 } from 'react-native-reanimated';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -33,14 +33,12 @@ export default function WelcomeScreen() {
     WebBrowser.warmUpAsync();
 
     // Animation Sequence
-    // 1. Intro Text slides in from right (immediately)
     introOpacity.value = withTiming(1, { duration: 500 });
     introTranslateX.value = withSequence(
-      withTiming(0, { duration: 1000, easing: Easing.out(Easing.exp) }), // Slide in
-      withDelay(10000, withTiming(-width, { duration: 1000, easing: Easing.in(Easing.exp) })) // Wait 10s, Slide out left
+      withTiming(0, { duration: 1000, easing: Easing.out(Easing.exp) }),
+      withDelay(10000, withTiming(-width, { duration: 1000, easing: Easing.in(Easing.exp) }))
     );
 
-    // 2. Button slides in from right (after intro exits ~11s)
     buttonOpacity.value = withDelay(11000, withTiming(1, { duration: 500 }));
     buttonTranslateX.value = withDelay(
       11000,
@@ -53,36 +51,55 @@ export default function WelcomeScreen() {
   }, []);
 
   const onSignInWithGoogle = React.useCallback(async () => {
+    Alert.alert("Debug", "In the function");
     try {
-      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
+      Alert.alert("Debug", "Starting OAuth Flow");
+
+      const redirectUrl = Linking.createURL('oauthredirect', { scheme: 'myapp' });
+      Alert.alert("Debug", `Redirect URL: ${redirectUrl}`);
+
+      if (!redirectUrl) {
+        Alert.alert("OAuth Error", "Redirect URL is null");
+        return;
+      }
+
+      const response = await startOAuthFlow({ redirectUrl });
+      //Alert.alert("Debug", "OAuth Flow Completed - Response: " + JSON.stringify(response || {}));
+
+      const { createdSessionId, setActive } = response || {};
+      console.log(createdSessionId)
 
       if (createdSessionId) {
         if (setActive) {
+          //Alert.alert("Debug", "Setting Active Session");
           await setActive({ session: createdSessionId });
+          //Alert.alert("Debug", "Session Active");
         }
+        // Navigate manually to your desired screen
+
+
         router.replace('/(tabs)/search');
+      } else {
+        Alert.alert("Debug", "No createdSessionId found");
       }
-    } catch (err) {
-      console.error("OAuth error", err);
+    } catch (err: any) {
+      const errorMessage = err ? (err.message || JSON.stringify(err)) : "Unknown Error (null)";
+      Alert.alert("OAuth Error Catch", errorMessage);
     }
   }, []);
 
-  const introStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: introTranslateX.value }],
-      opacity: introOpacity.value,
-    };
-  });
+  const introStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: introTranslateX.value }],
+    opacity: introOpacity.value,
+  }));
 
-  const buttonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: buttonTranslateX.value }],
-      opacity: buttonOpacity.value,
-      position: 'absolute', // Position absolute to overlap/replace the intro container area if needed
-      width: '100%',
-      alignItems: 'center',
-    };
-  });
+  const buttonStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: buttonTranslateX.value }],
+    opacity: buttonOpacity.value,
+    position: 'absolute',
+    width: '100%',
+    alignItems: 'center',
+  }));
 
   if (isSignedIn) {
     return <Redirect href="/(tabs)/search" />;
@@ -99,7 +116,7 @@ export default function WelcomeScreen() {
         <StatusBar style="light" />
         <SafeAreaView className="flex-1 w-full justify-between items-center py-12">
 
-          {/* Top Section (Static) */}
+          {/* Top Section */}
           <View className="flex-1 justify-center items-center w-full">
             <Text className="text-black font-[Impact] font-black tracking-[0.2em] text-6xl text-center pt-10 mb-8 uppercase">
               MIND  REPS
@@ -114,47 +131,29 @@ export default function WelcomeScreen() {
             </Text>
           </View>
 
-          {/* Bottom Section (Animated) */}
+          {/* Bottom Section */}
           <View className="w-full items-center mb-12 h-64 justify-center relative">
-
-            {/* Intro Text Animation */}
+            {/* Intro Animation */}
             <Animated.View style={[introStyle, { width: '100%', paddingHorizontal: 32, position: 'absolute' }]}>
-
               <View className="space-y-6 px-4">
-                <View className="flex-row items-start">
-                  <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
-                  <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">
-                    BUILDING THE ESCAPE FROM ANXIOUS THOUGHT LOOPS
-                  </Text>
-                </View>
-                <View className="flex-row items-start">
-                  <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
-                  <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">
-                    FORMING HABITS TO ALLOW CALM, CONTROL AND CONFIDENCE
-                  </Text>
-                </View>
-                <View className="flex-row items-start">
-                  <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
-                  <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">
-                    LOSING THE GURU VIBES & LEARNING THE BIOLOGY
-                  </Text>
-                </View>
+                {["BUILDING THE ESCAPE FROM ANXIOUS THOUGHT LOOPS",
+                  "FORMING HABITS TO ALLOW CALM, CONTROL AND CONFIDENCE",
+                  "LOSING THE GURU VIBES & LEARNING THE BIOLOGY"].map((text, i) => (
+                  <View key={i} className="flex-row items-start">
+                    <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
+                    <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">{text}</Text>
+                  </View>
+                ))}
               </View>
             </Animated.View>
 
             {/* Button Animation */}
             <Animated.View style={buttonStyle}>
               <TouchableOpacity
-                className="bg-white/90 flex-row items-center justify-center px-8 py-4 rounded-full w-4/5 max-w-sm "
+                className="bg-white/90 flex-row items-center justify-center px-8 py-4 rounded-full w-4/5 max-w-sm"
                 activeOpacity={0.8}
                 onPress={onSignInWithGoogle}
-                style={{
-                  // shadowColor: "#000",
-                  // shadowOffset: { width: 0, height: 4 },
-                  // shadowOpacity: 0.30,
-                  // shadowRadius: 4.65,
-                  elevation: 8,
-                }}
+                style={{ elevation: 8 }}
               >
                 <AntDesign name="google" size={24} color="#333" />
                 <Text className="text-slate-800 text-lg font-medium ml-3">Sign in with Google</Text>

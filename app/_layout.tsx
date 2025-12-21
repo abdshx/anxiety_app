@@ -1,6 +1,7 @@
+import 'react-native-url-polyfill/auto';
 import { Stack } from "expo-router";
 import "./globals.css";
-import { StatusBar } from "react-native";
+import { StatusBar, View, Text, Image, TouchableOpacity, Dimensions, Alert } from "react-native";
 import { useFonts, DancingScript_700Bold } from "@expo-google-fonts/dancing-script";
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -52,7 +53,7 @@ export default function RootLayout() {
     return null;
   }
 
-   if (!publishableKey) {
+  if (!publishableKey) {
     throw new Error(
       'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
     );
