@@ -1,11 +1,9 @@
-import { View, Text, Image, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import * as Linking from 'expo-linking';
+import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useOAuth, useAuth } from '@clerk/clerk-expo';
-import * as WebBrowser from 'expo-web-browser';
+import { useAuth } from '@clerk/clerk-expo';
 import React, { useEffect } from 'react';
 import { router, Redirect } from 'expo-router';
 import Animated, {
@@ -17,12 +15,11 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 
-WebBrowser.maybeCompleteAuthSession();
+
 
 const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
-  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const { isSignedIn } = useAuth(); // Check auth status
   const introTranslateX = useSharedValue(width);
   const introOpacity = useSharedValue(0);
@@ -30,7 +27,7 @@ export default function WelcomeScreen() {
   const buttonOpacity = useSharedValue(0);
 
   useEffect(() => {
-    WebBrowser.warmUpAsync();
+
 
     // Animation Sequence
     introOpacity.value = withTiming(1, { duration: 500 });
@@ -45,48 +42,10 @@ export default function WelcomeScreen() {
       withTiming(0, { duration: 1000, easing: Easing.out(Easing.exp) })
     );
 
-    return () => {
-      WebBrowser.coolDownAsync();
-    };
+
   }, []);
 
-  const onSignInWithGoogle = React.useCallback(async () => {
-    Alert.alert("Debug", "In the function");
-    try {
-      Alert.alert("Debug", "Starting OAuth Flow");
 
-      const redirectUrl = Linking.createURL('oauthredirect', { scheme: 'myapp' });
-      Alert.alert("Debug", `Redirect URL: ${redirectUrl}`);
-
-      if (!redirectUrl) {
-        Alert.alert("OAuth Error", "Redirect URL is null");
-        return;
-      }
-
-      const response = await startOAuthFlow({ redirectUrl });
-      //Alert.alert("Debug", "OAuth Flow Completed - Response: " + JSON.stringify(response || {}));
-
-      const { createdSessionId, setActive } = response || {};
-      console.log(createdSessionId)
-
-      if (createdSessionId) {
-        if (setActive) {
-          //Alert.alert("Debug", "Setting Active Session");
-          await setActive({ session: createdSessionId });
-          //Alert.alert("Debug", "Session Active");
-        }
-        // Navigate manually to your desired screen
-
-
-        router.replace('/(tabs)/search');
-      } else {
-        Alert.alert("Debug", "No createdSessionId found");
-      }
-    } catch (err: any) {
-      const errorMessage = err ? (err.message || JSON.stringify(err)) : "Unknown Error (null)";
-      Alert.alert("OAuth Error Catch", errorMessage);
-    }
-  }, []);
 
   const introStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: introTranslateX.value }],
@@ -105,6 +64,7 @@ export default function WelcomeScreen() {
     return <Redirect href="/(tabs)/search" />;
   }
 
+  // Main Content
   return (
     <View className="flex-1">
       <LinearGradient
@@ -139,11 +99,11 @@ export default function WelcomeScreen() {
                 {["BUILDING THE ESCAPE FROM ANXIOUS THOUGHT LOOPS",
                   "FORMING HABITS TO ALLOW CALM, CONTROL AND CONFIDENCE",
                   "LOSING THE GURU VIBES & LEARNING THE BIOLOGY"].map((text, i) => (
-                  <View key={i} className="flex-row items-start">
-                    <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
-                    <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">{text}</Text>
-                  </View>
-                ))}
+                    <View key={i} className="flex-row items-start">
+                      <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
+                      <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">{text}</Text>
+                    </View>
+                  ))}
               </View>
             </Animated.View>
 
@@ -152,11 +112,11 @@ export default function WelcomeScreen() {
               <TouchableOpacity
                 className="bg-white/90 flex-row items-center justify-center px-8 py-4 rounded-full w-4/5 max-w-sm"
                 activeOpacity={0.8}
-                onPress={onSignInWithGoogle}
+                onPress={() => router.push('./auth/sign-up')}
                 style={{ elevation: 8 }}
               >
-                <AntDesign name="google" size={24} color="#333" />
-                <Text className="text-slate-800 text-lg font-medium ml-3">Sign in with Google</Text>
+                <Feather name="arrow-right-circle" size={24} color="#db2777" />
+                <Text className="text-slate-800 text-lg font-medium ml-3 font-bold">GET STARTED</Text>
               </TouchableOpacity>
             </Animated.View>
 

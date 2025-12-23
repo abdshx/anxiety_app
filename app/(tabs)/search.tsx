@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { supabase } from '@/lib/supabase';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,21 +24,21 @@ const audioSessions = [
 ];
 
 export default function SearchScreen() {
-  const { signOut } = useAuth();
-  const { user } = useUser();
+  const { signOut, isSignedIn } = useAuth();
+  const { user, isLoaded } = useUser();
   const [day, setDay] = useState(1);
   const [stressLevel, setStressLevel] = useState(0);
-  let emailAddress=user?.emailAddresses[0].emailAddress
- 
+
+  // Safe access to email
+  const emailAddress = user?.emailAddresses?.[0]?.emailAddress;
 
   const fetchUserData = async () => {
-
-    if (!user?.firstName) {
-      console.log('No user found');
+    if (!user || !emailAddress) {
+      console.log('fetchUserData: Missing user or email');
       return;
     }
 
-  
+    console.log("Fetching DB data for:", emailAddress)
     try {
       // Check if user exists
       const { data: existingUser, error: fetchError } = await supabase
@@ -78,11 +78,11 @@ export default function SearchScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchUserData();
-    }, [user?.firstName])
+    }, [user?.username])
   );
 
   const startNextDay = async () => {
-    if (!user?.firstName) return;
+    if (!user) return;
     const newDay = day + 1;
     setDay(newDay);
     //setStressLevel(0);
@@ -111,7 +111,7 @@ export default function SearchScreen() {
         <View className="px-6 py-4 flex-row justify-between items-center z-10">
           <View>
             <Text className="text-white/80 text-lg font-dancing">Good Morning,</Text>
-            <Text className="text-white text-3xl font-dancing font-bold">{user?.firstName || 'Abdullah'}</Text>
+            <Text className="text-white text-3xl font-dancing font-bold">{user?.username || 'user'}</Text>
           </View>
           <TouchableOpacity
             className="bg-white/20 p-3 rounded-full border border-white/30 backdrop-blur-md"
@@ -144,7 +144,7 @@ export default function SearchScreen() {
                   onPress={() => router.push({
                     pathname: '/save',
                     params: {
-                      day: day, 
+                      day: day,
                       cardDay: session.day,
                       title: session.title,
                       category: session.category,

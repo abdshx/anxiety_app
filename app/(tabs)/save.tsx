@@ -88,7 +88,7 @@ export default function AudioPlayerScreen() {
           // ✏️ CHANGED: safe navigation
           // ✏️ CHANGED: safe navigation with Supabase check
           requestAnimationFrame(async () => {
-            if (!user?.firstName) {
+            if (!user) {
               router.replace('/(tabs)/profile');
               return;
             }

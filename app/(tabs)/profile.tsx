@@ -14,7 +14,7 @@ export default function ProfileScreen() {
   let emailAddress=user?.emailAddresses[0].emailAddress
 
   const handleSubmit = async () => {
-    if (selectedLevel && user?.firstName) {
+    if (selectedLevel && user) {
       try {
         const { error } = await supabase
           .from('User')
