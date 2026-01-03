@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, Image, Pressable, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useUser } from '@clerk/clerk-expo';
+import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
 export default function ProfileScreen() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-  let emailAddress=user?.emailAddresses[0].emailAddress
+  let emailAddress = user?.email
 
   const handleSubmit = async () => {
     if (selectedLevel && user) {
@@ -19,7 +19,7 @@ export default function ProfileScreen() {
         const { error } = await supabase
           .from('User')
           .update({ stress_level: selectedLevel })
-          .eq('username', emailAddress);
+          .eq('email', emailAddress);
 
         if (error) {
           console.error('Error updating stress level:', error);
@@ -59,7 +59,10 @@ export default function ProfileScreen() {
               </Text>
             </View>
 
-            <View className="flex-row flex-wrap justify-between gap-y-4 mb-8">
+            <View className="w-full px-1 mb-2">
+              <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest">Calm</Text>
+            </View>
+            <View className="flex-row flex-wrap justify-between gap-y-4 ">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
                 <TouchableOpacity
                   key={level}
@@ -80,8 +83,7 @@ export default function ProfileScreen() {
 
             </View>
 
-            <View className="flex-row justify-between mb-8 px-2">
-              <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest">Calm</Text>
+            <View className="flex-row justify-end mb-8 px-2">
               <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest">Anxious</Text>
             </View>
 

@@ -20,6 +20,7 @@ module.exports = {
       },
       fontFamily: {
         dancing: ["DancingScript_700Bold"],
+        oswald: ["Oswald_400Regular"],
       },
     },
   },

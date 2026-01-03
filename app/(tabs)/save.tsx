@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions, Pressable, ActivityIndicator, Alert } from 'react-native';
-import { useUser } from '@clerk/clerk-expo';
+import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
@@ -34,9 +34,9 @@ const audioMap: { [key: number]: any } = {
 const { width } = Dimensions.get('window');
 
 export default function AudioPlayerScreen() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const params = useLocalSearchParams();
-  const { day, title, category, ts,cardDay } = params;
+  const { day, title, category, ts, cardDay } = params;
   const audioFile = audioMap[Number(cardDay)] || audioMap[1];
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -46,7 +46,7 @@ export default function AudioPlayerScreen() {
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
-  let emailAddress=user?.emailAddresses[0].emailAddress
+  let emailAddress = user?.email;
 
   const pulseScale = useSharedValue(1);
 
@@ -68,6 +68,12 @@ export default function AudioPlayerScreen() {
         audioFile,
         { shouldPlay: true }
       );
+
+      // // Check if component is still mounted
+      // if (!isMounted.current) {
+      //   await newSound.unloadAsync();
+      //   return;
+      // }
 
       setSound(newSound);
       setIsPlaying(true);
@@ -97,8 +103,8 @@ export default function AudioPlayerScreen() {
               const { data, error } = await supabase
                 .from('User')
                 .select('stress_level')
-                .eq('username', emailAddress)
-                .eq('day', Number(day))
+                .eq('email', emailAddress)
+                .eq('day_number', Number(day))
                 .single();
 
               if (!error && data && data.stress_level > 0) {
@@ -292,14 +298,14 @@ export default function AudioPlayerScreen() {
           </Animated.View>
         </View>
 
-        <View className="flex-row justify-between items-center mt-12 px-8">
+        {/* <View className="flex-row justify-between items-center mt-12 px-8">
           <TouchableOpacity>
             <Feather name="heart" size={24} color="white" />
           </TouchableOpacity>
           <TouchableOpacity>
             <Feather name="share-2" size={24} color="white" />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </LinearGradient>
     </View>
   );

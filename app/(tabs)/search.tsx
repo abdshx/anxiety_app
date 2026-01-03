@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
-import { useAuth, useUser } from '@clerk/clerk-expo';
+import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
@@ -11,26 +11,25 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 
 const audioSessions = [
-  { id: 1, day: 1, title: 'What is this **', category: 'Introduction', duration: '10 min', img: require('@/assets/images/card1.png') },
-  { id: 2, day: 2, title: 'The terminology trap', category: "Basics", duration: '15 min', img: require('@/assets/images/card2.png') },
-  { id: 3, day: 3, title: 'Your breath is just HQ', category: 'Technique', duration: '7 min', img: require('@/assets/images/card3.png') },
-  { id: 4, day: 4, title: 'Gym for your mind', category: 'Concept', duration: '5 min', img: require('@/assets/images/card4.png') },
-  { id: 5, day: 5, title: 'Don’t lose half your life', category: 'Philosophy', duration: '20 min', img: require('@/assets/images/card4.png') },
-  { id: 6, day: 6, title: 'Past, present & future', category: 'Perspective', duration: '10 min', img: require('@/assets/images/card1.png') },
-  { id: 7, day: 7, title: 'Get off the tracks to angryville', category: "Emotion", duration: '15 min', img: require('@/assets/images/card2.png') },
-  { id: 8, day: 8, title: 'Mind-gym benefits in real life', category: 'Application', duration: '7 min', img: require('@/assets/images/card3.png') },
-  { id: 9, day: 9, title: 'Life’s secret master key', category: 'Insight', duration: '5 min', img: require('@/assets/images/card4.png') },
-  { id: 10, day: 10, title: 'Inside world to new life', category: 'Transformation', duration: '20 min', img: require('@/assets/images/card4.png') },
+  { id: 1, day: 1, title: 'What is this ****?', category: 'Introduction', duration: '10 min', img: require('@/assets/images/card1.png') },
+  { id: 2, day: 2, title: 'The terminology trap', category: "Basics", duration: '10 min', img: require('@/assets/images/card2.png') },
+  { id: 3, day: 3, title: 'Your breath is just HQ', category: 'Technique', duration: '10 min', img: require('@/assets/images/card3.png') },
+  { id: 4, day: 4, title: 'Gym for your mind', category: 'Concept', duration: '11 min', img: require('@/assets/images/card4.png') },
+  { id: 5, day: 5, title: 'Don’t lose half your life', category: 'Philosophy', duration: '11 min', img: require('@/assets/images/card5.png') },
+  { id: 6, day: 6, title: 'Past, present & future', category: 'Perspective', duration: '11 min', img: require('@/assets/images/card1.png') },
+  { id: 7, day: 7, title: 'Get off the tracks to angryville', category: "Emotion", duration: '10 min', img: require('@/assets/images/card2.png') },
+  { id: 8, day: 8, title: 'Mind-gym benefits in real life', category: 'Application', duration: '11 min', img: require('@/assets/images/card3.png') },
+  { id: 9, day: 9, title: 'Life’s secret master key', category: 'Insight', duration: '10 min', img: require('@/assets/images/card4.png') },
+  { id: 10, day: 10, title: 'Inside world to new life', category: 'Transformation', duration: '11 min', img: require('@/assets/images/card5.png') },
 ];
 
 export default function SearchScreen() {
-  const { signOut, isSignedIn } = useAuth();
-  const { user, isLoaded } = useUser();
+  const { user, signOut } = useAuth();
   const [day, setDay] = useState(1);
   const [stressLevel, setStressLevel] = useState(0);
 
   // Safe access to email
-  const emailAddress = user?.emailAddresses?.[0]?.emailAddress;
+  const emailAddress = user?.email;
 
   const fetchUserData = async () => {
     if (!user || !emailAddress) {
@@ -44,7 +43,7 @@ export default function SearchScreen() {
       const { data: existingUser, error: fetchError } = await supabase
         .from('User')
         .select('*')
-        .eq('username', emailAddress)
+        .eq('email', emailAddress)
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -53,14 +52,14 @@ export default function SearchScreen() {
       }
 
       if (existingUser) {
-        setDay(existingUser.day);
+        setDay(existingUser.day_number); // Changed day to day_number to match schema if needed, checking consistency
         setStressLevel(existingUser.stress_level);
       } else {
-        // Create new user
+        // Create new user (fallback if not created during signup)
         const { error: insertError } = await supabase
           .from('User')
           .insert([
-            { username: emailAddress, day: 1, stress_level: 0 }
+            { email: emailAddress, day_number: 1, stress_level: 0 }
           ]);
 
         if (insertError) {
@@ -78,7 +77,7 @@ export default function SearchScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchUserData();
-    }, [user?.username])
+    }, [user?.email])
   );
 
   const startNextDay = async () => {
@@ -89,8 +88,8 @@ export default function SearchScreen() {
 
     const { error } = await supabase
       .from('User')
-      .update({ day: newDay, stress_level: 0 })
-      .eq('username', emailAddress);
+      .update({ day_number: newDay, stress_level: 0 })
+      .eq('email', emailAddress);
 
     if (error) {
       console.error('Error updating day:', error);
@@ -110,8 +109,8 @@ export default function SearchScreen() {
         {/* Header */}
         <View className="px-6 py-4 flex-row justify-between items-center z-10">
           <View>
-            <Text className="text-white/80 text-lg font-dancing">Good Morning,</Text>
-            <Text className="text-white text-3xl font-dancing font-bold">{user?.username || 'user'}</Text>
+            <Text className="text-white/80 text-lg font-oswald">Hello</Text>
+            <Text className="text-white text-3xl font-bold">{user?.email?.split('@')[0] || 'User'}</Text>
           </View>
           <TouchableOpacity
             className="bg-white/20 p-3 rounded-full border border-white/30 backdrop-blur-md"
@@ -128,7 +127,7 @@ export default function SearchScreen() {
 
           {/* Daily Essentials Section */}
           <View className="mt-4">
-            <Text className="text-3xl font-bold text-white px-6 mb-4 font-dancing">Daily Essentials</Text>
+            <Text className="text-3xl font-bold text-white px-6 mb-4 font-dancing">Guided Meditation</Text>
 
             <ScrollView
               horizontal
@@ -164,14 +163,14 @@ export default function SearchScreen() {
                       <View className="bg-white/30 p-2 rounded-full backdrop-blur-md border border-white/20">
                         <FontAwesome5 name="play" size={10} color="white" />
                       </View>
-                      <View className="bg-white/90 px-3 py-1 rounded-full">
+                      <View className="bg-white/90 px-3 py-1 rounded-full border border-black border-[2px]">
                         <Text className="text-orange-900 text-xs font-bold font-dancing">Day {session.day}</Text>
                       </View>
                     </View>
 
                     <View className="p-5 z-10">
                       <Text className="text-white text-xl font-bold leading-6 mb-1 font-dancing">{session.title}</Text>
-                      <Text className="text-orange-50/90 text-xs font-medium uppercase tracking-wider mb-2">{session.category}</Text>
+                      <Text className="text-orange-50/90 text-xs font-medium uppercase tracking-wider mb-2 font-oswald">{session.category}</Text>
                       <View className="flex-row items-center">
                         <Feather name="clock" size={12} color="#ffedd5" />
                         <Text className="text-orange-50 text-xs ml-1 font-medium font-dancing">{session.duration}</Text>
@@ -198,7 +197,7 @@ export default function SearchScreen() {
                   <Feather name="calendar" size={24} color="#db2777" />
                 </View>
                 <View >
-                  <Text className="text-white/80 font-medium font-dancing">Current Streak</Text>
+                  <Text className="text-white/80 font-medium font-oswald">Current Streak</Text>
                   <Text className="text-3xl font-bold text-white font-dancing">Day {day}</Text>
                 </View>
               </View>
@@ -210,7 +209,7 @@ export default function SearchScreen() {
                   <FontAwesome5 name="lightbulb" size={24} color="#fcd34d" />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-white/80 font-medium mb-1 font-dancing">Today's Focus</Text>
+                  <Text className="text-white/80 font-medium mb-1 font-oswald">Today's Focus</Text>
                   <Text className="text-white text-lg font-semibold leading-6 ">
                     Mindfulness techniques for reducing anxiety triggers.
                   </Text>
@@ -219,12 +218,12 @@ export default function SearchScreen() {
 
               <View className="bg-white/10 rounded-2xl p-4 flex-row items-center justify-between border border-white/20">
                 <View>
-                  <Text className="text-white/80 text-sm font-medium mb-1 font-dancing">Current Stress Level</Text>
+                  <Text className="text-white/80 text-sm font-medium mb-1 font-oswald">Current Stress Level</Text>
                   <Text className="text-2xl font-bold text-white font-dancing">Level {stressLevel}</Text>
                 </View>
                 <View className="h-10 w-[1px] bg-white/20 mx-4" />
                 <View>
-                  <Text className="text-white/80 text-sm font-medium mb-1 font-dancing">Goal</Text>
+                  <Text className="text-white/80 text-sm font-medium mb-1 font-oswald">Goal</Text>
                   <Text className="text-2xl font-bold text-green-300 font-dancing">Level {Math.max(0, stressLevel - 1)}</Text>
                 </View>
               </View>

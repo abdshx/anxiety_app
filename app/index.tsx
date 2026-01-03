@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth } from '@/context/AuthContext';
 import React, { useEffect } from 'react';
 import { router, Redirect } from 'expo-router';
 import Animated, {
@@ -20,7 +20,8 @@ import Animated, {
 const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
-  const { isSignedIn } = useAuth(); // Check auth status
+  const { user } = useAuth(); // Check auth status
+  const isSignedIn = !!user;
   const introTranslateX = useSharedValue(width);
   const introOpacity = useSharedValue(0);
   const buttonTranslateX = useSharedValue(width);
@@ -33,12 +34,12 @@ export default function WelcomeScreen() {
     introOpacity.value = withTiming(1, { duration: 500 });
     introTranslateX.value = withSequence(
       withTiming(0, { duration: 1000, easing: Easing.out(Easing.exp) }),
-      withDelay(10000, withTiming(-width, { duration: 1000, easing: Easing.in(Easing.exp) }))
+      withDelay(15000, withTiming(-width, { duration: 1000, easing: Easing.in(Easing.exp) }))
     );
 
-    buttonOpacity.value = withDelay(11000, withTiming(1, { duration: 500 }));
+    buttonOpacity.value = withDelay(16000, withTiming(1, { duration: 500 }));
     buttonTranslateX.value = withDelay(
-      11000,
+      16000,
       withTiming(0, { duration: 1000, easing: Easing.out(Easing.exp) })
     );
 
@@ -60,6 +61,8 @@ export default function WelcomeScreen() {
     alignItems: 'center',
   }));
 
+
+
   if (isSignedIn) {
     return <Redirect href="/(tabs)/search" />;
   }
@@ -78,7 +81,7 @@ export default function WelcomeScreen() {
 
           {/* Top Section */}
           <View className="flex-1 justify-center items-center w-full">
-            <Text className="text-black font-[Impact] font-black tracking-[0.2em] text-6xl text-center pt-10 mb-8 uppercase">
+            <Text className="text-black font-[Impact] font-black text-6xl text-center pt-10 mb-8 uppercase">
               MIND  REPS
             </Text>
             <Image
@@ -86,8 +89,8 @@ export default function WelcomeScreen() {
               className="w-100 h-80"
               resizeMode="contain"
             />
-            <Text className="text-white font-bold tracking-widest text-lg text-center mt-8 uppercase font-[Impact]">
-              TRAINING YOUR MIND LIKE YOUR BODY
+            <Text className="text-black font-bold text-2xl text-center mt-8 uppercase font-[Impact] px-10">
+              TRAINING YOUR MIND LIKE YOU TRAIN YOUR BODY
             </Text>
           </View>
 
@@ -96,12 +99,12 @@ export default function WelcomeScreen() {
             {/* Intro Animation */}
             <Animated.View style={[introStyle, { width: '100%', paddingHorizontal: 32, position: 'absolute' }]}>
               <View className="space-y-6 px-4">
-                {["BUILDING THE ESCAPE FROM ANXIOUS THOUGHT LOOPS",
-                  "FORMING HABITS TO ALLOW CALM, CONTROL AND CONFIDENCE",
-                  "LOSING THE GURU VIBES & LEARNING THE BIOLOGY"].map((text, i) => (
+                {["Building the escape from anxious thought loops",
+                  "Forming habits to allow calm, control and confidence",
+                  "Losing the guru vibes & learning the biology"].map((text, i) => (
                     <View key={i} className="flex-row items-start">
                       <Feather name="check-circle" size={20} color="white" style={{ marginTop: 4, marginRight: 12 }} />
-                      <Text className="text-white text-lg font-bold tracking-widest leading-7 flex-1">{text}</Text>
+                      <Text className="text-white text-lg tracking-widest leading-7 flex-1">{text}</Text>
                     </View>
                   ))}
               </View>

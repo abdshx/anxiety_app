@@ -1,42 +1,45 @@
 import 'react-native-url-polyfill/auto';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { useSignIn } from '@clerk/clerk-expo';
-import { Redirect, useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { AntDesign, Feather } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { AntDesign, Feather } from '@expo/vector-icons';
+// ... imports
 
 export default function SignInScreen() {
-  const { signIn, setActive, isLoaded } = useSignIn();
+  const { signIn, loading } = useAuth();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const onSignInPress = async () => {
-    if (!isLoaded) return;
-    setIsLoading(true);
+    if (loading) return;
 
+    // Validation
+    if (!email.trim().toLowerCase().endsWith('@gmail.com')) {
+      Alert.alert('Invalid Email', 'Please enter a valid @gmail.com address.');
+      return;
+    }
+    if (password.length <= 6) {
+      Alert.alert('Invalid Password', 'Password must be greater than 6 characters.');
+      return;
+    }
+
+    setIsSigningIn(true);
     try {
-      const completeSignIn = await signIn.create({
-        identifier: emailAddress,
-        password,
-      });
-
-      if (completeSignIn.status === 'complete') {
-        await setActive({ session: completeSignIn.createdSessionId });
+      const result = await signIn(email, password);
+      if (result.success) {
         router.replace('/(tabs)/search');
-      } else {
-        Alert.alert('Incomplete', 'Please verify your account to continue.');
       }
     } catch (err: any) {
-      const errorMessage = err.errors?.[0]?.longMessage || err.errors?.[0]?.message || err.message || "Invalid email or password.";
-      Alert.alert('Sign In Failed', errorMessage);
+      // Alert handled in context or here if needed, context handles it currently
     } finally {
-      setIsLoading(false);
+      setIsSigningIn(false);
     }
   };
 
@@ -61,10 +64,10 @@ export default function SignInScreen() {
                 <Feather name="mail" size={20} color="gray" />
                 <TextInput
                   autoCapitalize="none"
-                  value={emailAddress}
+                  value={email}
                   placeholder="Email..."
                   placeholderTextColor="gray"
-                  onChangeText={(email) => setEmailAddress(email)}
+                  onChangeText={setEmail}
                   className="flex-1 ml-3 text-slate-800 text-lg"
                   keyboardType="email-address"
                 />
@@ -77,7 +80,7 @@ export default function SignInScreen() {
                   placeholder="Password..."
                   placeholderTextColor="gray"
                   secureTextEntry={true}
-                  onChangeText={(password) => setPassword(password)}
+                  onChangeText={setPassword}
                   className="flex-1 ml-3 text-slate-800 text-lg"
                 />
               </View>
@@ -86,9 +89,9 @@ export default function SignInScreen() {
             <TouchableOpacity
               className="bg-white mt-8 rounded-full py-4 items-center flex-row justify-center"
               onPress={onSignInPress}
-              disabled={isLoading}
+              disabled={isSigningIn}
             >
-              {isLoading ? (
+              {isSigningIn ? (
                 <ActivityIndicator color="#db2777" />
               ) : (
                 <>
