@@ -90,7 +90,7 @@ export default function WelcomeScreen() {
               resizeMode="contain"
             />
             <Text className="text-black font-bold text-2xl text-center mt-8 uppercase font-[Impact] px-10">
-              TRAINING YOUR MIND LIKE YOU TRAIN YOUR BODY
+              MENTALLY STRONGER. MADE SIMPLE. QUICKER THAN YOU THINK.
             </Text>
           </View>
 
