@@ -15,6 +15,7 @@ import Animated, {
   cancelAnimation
 } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
 
@@ -200,6 +201,17 @@ export default function AudioPlayerScreen() {
       }
       : undefined;
   }, [sound]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      activateKeepAwakeAsync();
+    } else {
+      deactivateKeepAwake();
+    }
+    return () => {
+      deactivateKeepAwake();
+    };
+  }, [isPlaying]);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulseScale.value }],
