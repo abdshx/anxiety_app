@@ -30,6 +30,7 @@ export default function SearchScreen() {
 
   // Safe access to email
   const emailAddress = user?.email;
+  const username=user?.username
 
   const fetchUserData = async () => {
     if (!user || !emailAddress) {
@@ -110,7 +111,7 @@ export default function SearchScreen() {
         <View className="px-6 py-4 flex-row justify-between items-center z-10">
           <View>
             <Text className="text-white/80 text-lg font-oswald">Hello</Text>
-            <Text className="text-white text-3xl font-bold">{user?.email?.split('@')[0] || 'User'}</Text>
+            <Text className="text-white text-3xl font-bold">{username}</Text>
           </View>
           <TouchableOpacity
             className="bg-white/20 p-3 rounded-full border border-white/30 backdrop-blur-md"
