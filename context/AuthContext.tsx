@@ -7,7 +7,7 @@ type AuthContextType = {
   user: any | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string,username:string, password: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
 };
 
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string,username:string, password: string) => {
     try {
       setLoading(true);
       // Check if user exists
@@ -95,13 +95,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
         stress_level: 0,
-        day_number: 1
+        day_number: 1,
+        username
       }]);
 
       if (error) throw error;
 
       // Auto sign in
-      setUser({ email, password, stress_level: 0, day_number: 1 });
+      setUser({ email, password, stress_level: 0, day_number: 1,username });
       await SecureStore.setItemAsync('user_email', email);
       return { success: true };
 

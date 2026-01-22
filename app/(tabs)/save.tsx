@@ -258,7 +258,7 @@ export default function AudioPlayerScreen() {
           <Text className="text-3xl font-bold text-white text-center font-dancing mb-2">
             {title || 'Mindfulness for Beginners'}
           </Text>
-          <Text className="text-white/80 font-medium font-dancing text-lg">
+          <Text className="text-white/80 font-medium font-dancing text-2xl">
             {category || 'Jeff Warren'}
           </Text>
         </View>
@@ -277,10 +277,10 @@ export default function AudioPlayerScreen() {
           </Pressable>
 
           <View className="flex-row justify-between">
-            <Text className="text-xs text-white/50 font-medium">
+            <Text className="text-md text-white/50 font-medium">
               {formatTime(position)}
             </Text>
-            <Text className="text-xs text-white/50 font-medium">
+            <Text className="text-md text-white/50 font-medium">
               {formatTime(duration)}
             </Text>
           </View>

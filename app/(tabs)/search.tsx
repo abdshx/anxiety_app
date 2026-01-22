@@ -169,12 +169,12 @@ export default function SearchScreen() {
                       </View>
                     </View>
 
-                    <View className="p-5 z-10">
-                      <Text className="text-white text-xl font-bold leading-6 mb-1 font-dancing">{session.title}</Text>
-                      <Text className="text-orange-50/90 text-xs font-medium uppercase tracking-wider mb-2 font-oswald">{session.category}</Text>
+                    <View className="p-2 px-4 z-10 mb-4 rounded-lg bg-white mx-auto border border-black border-[2px]">
+                      <Text className="text-black text-xl font-bold leading-6 font-dancing rounded-md h-[70px] px-2">{session.title}</Text>
+                      <Text className="text-black text-xs font-medium uppercase tracking-wider border border-white rounded-md font-oswald">{session.category}</Text>
                       <View className="flex-row items-center">
-                        <Feather name="clock" size={12} color="#ffedd5" />
-                        <Text className="text-orange-50 text-xs ml-1 font-medium font-dancing">{session.duration}</Text>
+                        <Feather name="clock" size={12} color="#000" />
+                        <Text className="text-black text-xs ml-1 font-medium font-dancing border border-white p-[2px] rounded-md">{session.duration}</Text>
                       </View>
                     </View>
                   </ImageBackground>

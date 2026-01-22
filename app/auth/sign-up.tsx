@@ -32,10 +32,10 @@ export default function SignUpScreen() {
       Alert.alert('Invalid Username', 'Username must be greater than 4 characters.');
       return;
     }
-    if (!email.trim().toLowerCase().endsWith('@gmail.com')) {
-      Alert.alert('Invalid Email', 'Email must be a valid @gmail.com address.');
-      return;
-    }
+    // if (!email.trim().toLowerCase().endsWith('@gmail.com')) {
+    //   Alert.alert('Invalid Email', 'Email must be a valid @gmail.com address.');
+    //   return;
+    // }
     if (password.length <= 6) {
       Alert.alert('Weak Password', 'Password must be greater than 6 characters.');
       return;
@@ -44,7 +44,7 @@ export default function SignUpScreen() {
     setIsSigningUp(true);
 
     try {
-      const result = await signUp(email, password);
+      const result = await signUp(email,username,password);
       // Note: AuthContext currently ignores username as per user prompt requirements (email, password, stress, day).
       // If username is needed in DB, update AuthContext.
 
