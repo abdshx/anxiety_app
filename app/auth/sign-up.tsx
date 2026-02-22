@@ -39,7 +39,7 @@ export default function SignUpScreen() {
     if (password.length <= 6) {
       Alert.alert('Weak Password', 'Password must be greater than 6 characters.');
       return;
-    }
+    } 
 
     setIsSigningUp(true);
 

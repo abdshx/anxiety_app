@@ -170,7 +170,7 @@ export default function SearchScreen() {
                     </View>
 
                     <View className="p-2 px-4 z-10 mb-4 rounded-lg bg-white mx-auto border border-black border-[2px]">
-                      <Text className="text-black text-xl font-bold leading-6 font-dancing rounded-md h-[70px] px-2">{session.title}</Text>
+                      <Text className="text-black text-xl font-bold leading-6 font-dancing rounded-md px-2 mb-1">{session.title}</Text>
                       <Text className="text-black text-xs font-medium uppercase tracking-wider border border-white rounded-md font-oswald">{session.category}</Text>
                       <View className="flex-row items-center">
                         <Feather name="clock" size={12} color="#000" />
