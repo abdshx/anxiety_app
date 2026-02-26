@@ -39,12 +39,12 @@ export default function SignUpScreen() {
     if (password.length <= 6) {
       Alert.alert('Weak Password', 'Password must be greater than 6 characters.');
       return;
-    } 
+    }
 
     setIsSigningUp(true);
 
     try {
-      const result = await signUp(email,username,password);
+      const result = await signUp(email, username, password);
       // Note: AuthContext currently ignores username as per user prompt requirements (email, password, stress, day).
       // If username is needed in DB, update AuthContext.
 
@@ -69,7 +69,7 @@ export default function SignUpScreen() {
         <StatusBar style="light" />
 
         <SafeAreaView className="flex-1 w-full justify-center px-6">
-          <View className="bg-white/20 p-8 rounded-3xl w-full backdrop-blur-md">
+          <View className="bg-white/20 p-8 rounded-3xl w-full">
             <>
               {/* STEP 1: SIGN UP FORM */}
               <Text className="text-white font-[Impact] tracking-widest text-4xl text-center mb-8 uppercase">

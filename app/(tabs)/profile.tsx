@@ -45,7 +45,7 @@ export default function ProfileScreen() {
       >
         <SafeAreaView className="w-full items-center">
 
-          <View className="bg-white/90 p-8 rounded-[40px] w-full backdrop-blur-xl border border-white/40">
+          <View className="bg-white/90 p-8 rounded-[40px] w-full border border-white/40">
             <View className="items-center mb-8">
               <View className="bg-pink-100 p-4 rounded-full mb-4">
                 <Feather name="activity" size={32} color="#db2777" />

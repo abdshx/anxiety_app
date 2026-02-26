@@ -30,7 +30,7 @@ export default function SearchScreen() {
 
   // Safe access to email
   const emailAddress = user?.email;
-  const username=user?.username
+  const username = user?.username
 
   const fetchUserData = async () => {
     if (!user || !emailAddress) {
@@ -114,7 +114,7 @@ export default function SearchScreen() {
             <Text className="text-white text-3xl font-bold">{username}</Text>
           </View>
           <TouchableOpacity
-            className="bg-white/20 p-3 rounded-full border border-white/30 backdrop-blur-md"
+            className="bg-white/20 p-3 rounded-full border border-white/30"
             onPress={async () => {
               await signOut();
               router.replace('/');

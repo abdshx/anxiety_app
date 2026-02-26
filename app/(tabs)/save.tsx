@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 import { FontAwesome5, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -39,6 +39,7 @@ export default function AudioPlayerScreen() {
   const params = useLocalSearchParams();
   const { day, title, category, ts, cardDay } = params;
   const audioFile = audioMap[Number(cardDay)] || audioMap[1];
+  const insets = useSafeAreaInsets();
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
@@ -239,9 +240,9 @@ export default function AudioPlayerScreen() {
           colors={['transparent', '#fcd34d']}
           className="absolute bottom-0 left-0 right-0 h-40"
         />
-        <View className="absolute top-12 left-6">
+        <View style={{ position: 'absolute', top: insets.top + 8, left: 24 }}>
           <TouchableOpacity
-            className="bg-white/20 p-2 rounded-full backdrop-blur-md"
+            className="bg-white/20 p-2 rounded-full"
             onPress={() => router.back()}
           >
             <Feather name="arrow-left" size={24} color="white" />

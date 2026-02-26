@@ -54,12 +54,12 @@ export default function SignInScreen() {
         <StatusBar style="light" />
         <SafeAreaView className="flex-1 w-full justify-center px-6">
 
-          <View className="bg-white/20 p-8 rounded-3xl w-full backdrop-blur-md">
+          <View className="bg-white/20 p-8 rounded-3xl w-full">
             <Text className="text-white font-[Impact] tracking-widest text-4xl text-center mb-8 uppercase">
               Welcome Back
             </Text>
 
-            <View className="space-y-4 gap-[20px]">
+            <View className="gap-[20px]">
               <View className="bg-white/90 rounded-2xl px-4 py-3 flex-row items-center">
                 <Feather name="mail" size={20} color="gray" />
                 <TextInput

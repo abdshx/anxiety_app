@@ -77,7 +77,7 @@ export default function WelcomeScreen() {
         end={{ x: 1, y: 1 }}
       >
         <StatusBar style="light" />
-        <SafeAreaView className="flex-1 w-full justify-between items-center py-12">
+        <SafeAreaView className="flex-1 w-full justify-between items-center py-8">
 
           {/* Top Section */}
           <View className="flex-1 justify-center items-center w-full">
@@ -86,7 +86,7 @@ export default function WelcomeScreen() {
             </Text>
             <Image
               source={require('@/assets/images/index_brain_v2.png')}
-              className="w-100 h-80"
+              className="w-4/5 h-72"
               resizeMode="contain"
             />
             <Text className="text-black font-bold text-2xl text-center mt-8 uppercase font-[Impact] px-10">
@@ -95,7 +95,7 @@ export default function WelcomeScreen() {
           </View>
 
           {/* Bottom Section */}
-          <View className="w-full items-center mb-12 h-64 justify-center relative">
+          <View className="w-full items-center mb-6 h-64 justify-center relative">
             {/* Intro Animation */}
             <Animated.View style={[introStyle, { width: '100%', paddingHorizontal: 32, position: 'absolute' }]}>
               <View className="space-y-6 px-4">
