@@ -52,7 +52,6 @@ export default function AudioPlayerScreen() {
 
   const pulseScale = useSharedValue(1);
 
-  // ✏️ ADDED: track mounted state
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -93,8 +92,6 @@ export default function AudioPlayerScreen() {
           pulseScale.value = 1;
           newSound.stopAsync();
 
-          // ✏️ CHANGED: safe navigation
-          // ✏️ CHANGED: safe navigation with Supabase check
           requestAnimationFrame(async () => {
             if (!user) {
               router.replace('/(tabs)/profile');
@@ -228,7 +225,6 @@ export default function AudioPlayerScreen() {
     <View className="flex-1 bg-white">
       <StatusBar style="light" />
 
-      {/* ✅ UNCHANGED UI BELOW */}
       {/* Top Image Section */}
       <View className="h-[55%] w-full relative">
         <Image

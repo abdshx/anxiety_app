@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { NavigationContainer } from "@react-navigation/native";
 
 function TabIcon({ focused, icon, title }: any) {
   if (focused) {
@@ -73,7 +72,7 @@ export default function TabsLayout() {
         options={{
           title: "Save",
           headerShown: false,
-          tabBarStyle: { display: 'none' }, // Hide tab bar on specific screen
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.save} title="Save" />
           ),

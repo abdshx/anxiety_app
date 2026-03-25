@@ -20,7 +20,6 @@ export default function SignInScreen() {
   const onSignInPress = async () => {
     if (loading) return;
 
-    // Validation
     if (!email.trim().toLowerCase().endsWith('@gmail.com')) {
       Alert.alert('Invalid Email', 'Please enter a valid @gmail.com address.');
       return;
@@ -37,8 +36,8 @@ export default function SignInScreen() {
         router.replace('/(tabs)/search');
       }
     } catch (err: any) {
-      // Alert handled in context or here if needed, context handles it currently
-    } finally {
+    } 
+    finally {
       setIsSigningIn(false);
     }
   };

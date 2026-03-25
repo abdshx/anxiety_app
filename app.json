@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.abd679.rnmovieapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +27,6 @@
       "output": "static",
       "favicon": "./assets/images/logo.png"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -45,7 +48,7 @@
             "buildToolsVersion": "35.0.0"
           }
         }
-      ] 
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -55,8 +58,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "0f357b20-2ab2-4192-a452-908d8381495a"
+        "projectId": "ceb7423d-477c-436f-a849-1f7cb1b71437"
       }
-    }
+    },
+    "owner": "abd97mu"
   }
 }

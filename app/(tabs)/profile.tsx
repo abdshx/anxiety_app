@@ -23,7 +23,6 @@ export default function ProfileScreen() {
 
         if (error) {
           console.error('Error updating stress level:', error);
-          // Optionally show error to user
         } else {
           console.log('Submitted anxiety level:', selectedLevel);
           router.replace('/(tabs)/search');

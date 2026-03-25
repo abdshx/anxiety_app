@@ -21,13 +21,12 @@ export default function SignUpScreen() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState(''); // Kept for UI but not used in AuthContext signUp based on requirements, or we can add it to DB later.
+  const [username, setUsername] = useState(''); 
   const [isSigningUp, setIsSigningUp] = useState(false);
 
   const onSignUpPress = async () => {
     if (loading) return;
 
-    // Validation
     if (username.length <= 4) {
       Alert.alert('Invalid Username', 'Username must be greater than 4 characters.');
       return;
@@ -45,14 +44,11 @@ export default function SignUpScreen() {
 
     try {
       const result = await signUp(email, username, password);
-      // Note: AuthContext currently ignores username as per user prompt requirements (email, password, stress, day).
-      // If username is needed in DB, update AuthContext.
 
       if (result.success) {
         router.replace('/(tabs)/search');
       }
     } catch (err: any) {
-      // Handled in context or here
     } finally {
       setIsSigningUp(false);
     }

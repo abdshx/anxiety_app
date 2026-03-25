@@ -15,12 +15,10 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 
-
-
 const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
-  const { user } = useAuth(); // Check auth status
+  const { user } = useAuth(); 
   const isSignedIn = !!user;
   const introTranslateX = useSharedValue(width);
   const introOpacity = useSharedValue(0);
@@ -30,7 +28,6 @@ export default function WelcomeScreen() {
   useEffect(() => {
 
 
-    // Animation Sequence
     introOpacity.value = withTiming(1, { duration: 500 });
     introTranslateX.value = withSequence(
       withTiming(0, { duration: 1000, easing: Easing.out(Easing.exp) }),
@@ -67,7 +64,6 @@ export default function WelcomeScreen() {
     return <Redirect href="/(tabs)/search" />;
   }
 
-  // Main Content
   return (
     <View className="flex-1">
       <LinearGradient

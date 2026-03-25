@@ -28,7 +28,6 @@ export default function SearchScreen() {
   const [day, setDay] = useState(1);
   const [stressLevel, setStressLevel] = useState(0);
 
-  // Safe access to email
   const emailAddress = user?.email;
   const username = user?.username
 
@@ -40,7 +39,6 @@ export default function SearchScreen() {
 
     console.log("Fetching DB data for:", emailAddress)
     try {
-      // Check if user exists
       const { data: existingUser, error: fetchError } = await supabase
         .from('User')
         .select('*')
@@ -53,10 +51,9 @@ export default function SearchScreen() {
       }
 
       if (existingUser) {
-        setDay(existingUser.day_number); // Changed day to day_number to match schema if needed, checking consistency
+        setDay(existingUser.day_number); 
         setStressLevel(existingUser.stress_level);
       } else {
-        // Create new user (fallback if not created during signup)
         const { error: insertError } = await supabase
           .from('User')
           .insert([
@@ -99,7 +96,7 @@ export default function SearchScreen() {
 
   return (
     <LinearGradient
-      colors={['#fcd34d', '#f472b6', '#db2777', '#c084fc']} // Vibrant Sunrise with Purple Accent
+      colors={['#fcd34d', '#f472b6', '#db2777', '#c084fc']} 
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       className="flex-1"
@@ -157,7 +154,6 @@ export default function SearchScreen() {
                     className="w-48 h-64 justify-between overflow-hidden relative"
                     imageStyle={{ borderRadius: 24 }}
                   >
-                    {/* Overlay for readability */}
                     <View className="absolute inset-0 bg-black/20 rounded-3xl" />
 
                     <View className="p-5 flex-row justify-between items-start z-10">
@@ -169,9 +165,10 @@ export default function SearchScreen() {
                       </View>
                     </View>
 
-                    <View className="p-2 px-4 z-10 mb-4 rounded-lg bg-white mx-auto border border-black border-[2px]">
+                    {/* <View className="p-2 px-4 z-10 mb-4 rounded-lg bg-white mx-auto border border-black border-[2px]"> */}
+                    <View className=" w-[130px] mx-auto mb-4 px-2 py-2 z-10 rounded-lg bg-white border border-black border-[2px]">
                       <Text className="text-black text-xl font-bold leading-6 font-dancing rounded-md px-2 mb-1">{session.title}</Text>
-                      <Text className="text-black text-xs font-medium uppercase tracking-wider border border-white rounded-md font-oswald">{session.category}</Text>
+                      <Text className="text-black text-xs font-me dium uppercase tracking-wider border border-white rounded-md font-oswald">{session.category}</Text>
                       <View className="flex-row items-center">
                         <Feather name="clock" size={12} color="#000" />
                         <Text className="text-black text-xs ml-1 font-medium font-dancing border border-white p-[2px] rounded-md">{session.duration}</Text>

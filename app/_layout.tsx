@@ -7,55 +7,62 @@ import { Oswald_400Regular } from "@expo-google-fonts/oswald";
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from '@/context/AuthContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    DancingScript_700Bold,
+  const [loaded, error] = useFonts({
+    DancingScript_700Bold, 
     Oswald_400Regular,
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (error) {
+      console.error("Error loading fonts", error);
+    }
+    // Hide splash screen when fonts are loaded OR if there's an error so the app doesn't hang
+    if (loaded || error) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, error]);
 
-  if (!loaded) {
+  if (!loaded && !error) {
     return null;
   }
 
   return (
-
-    <AuthProvider>
-      <StatusBar hidden={true} />
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Movie"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="auth"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <StatusBar hidden={true} />
+          <Stack>
+            <Stack.Screen
+              name="index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Movie"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="auth"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+        </AuthProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-
